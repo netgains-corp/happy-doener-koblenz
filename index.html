@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Döner Koblenz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            red: '#E31B23',      /* Happy Döner Rot */
+                            yellow: '#FFD700',   /* Happy Döner Gelb */
+                            dark: '#0a0a0a',     /* Fast Schwarz */
+                            accent: '#F59E0B'    /* Akzent Gelb */
+                        }
+                    },
+                    fontFamily: {
+                        happy: ['Chewy', 'cursive'], 
+                        standard: ['Roboto', 'sans-serif'],
+                        headings: ['Oswald', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Oswald:wght@500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #0a0a0a;
+        }
+
+        /* Haupt-Hintergrund */
+        #bg-image {
+            position: fixed;
+            inset: 0;
+            background-image: url('https://images.unsplash.com/photo-1626700051175-6818013e1d4f?q=80&w=1920&auto=format&fit=crop'); 
+            background-size: cover;
+            background-position: center;
+            z-index: -2;
+            filter: brightness(0.2) saturate(1.1);
+        }
+
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.95) 100%);
+            z-index: -1;
+        }
+
+        /* CARD STYLE - Graue Holzbretter Planken */
+        .wood-card {
+            position: relative;
+            background-color: #1a1a1a;
+            border: 1px solid rgba(227, 27, 35, 0.4);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+            border-radius: 12px;
+            color: #f3f4f6;
+            overflow: hidden;
+        }
+
+        .wood-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: url('https://images.unsplash.com/photo-1541123439551-12ec30e32fb1?q=80&w=1000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(1) brightness(0.25) contrast(1.3);
+            z-index: 0;
+            opacity: 0.95;
+        }
+
+        .wood-card > * {
+            position: relative;
+            z-index: 10;
+        }
+
+        .font-headings { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+        .font-happy { font-family: 'Chewy', cursive; }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 50;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #E31B23;
+            border-radius: 9999px;
+            padding: 10px;
+            cursor: pointer;
+            color: #E31B23;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+        
+        .halal-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            width: 50px;
+            height: 50px;
+            background: #064e3b;
+            border: 2px solid #FFD700;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 9px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+            z-index: 20;
+        }
+
+        .text-shadow-logo {
+            text-shadow: 2px 4px 10px rgba(0,0,0,1);
+        }
+        
+        /* Animation für die Flamme */
+        @keyframes flame-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.15) translate(2px, -2px); opacity: 1; filter: brightness(1.2); }
+        }
+        .animate-flame {
+            animation: flame-pulse 1.8s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="py-6 sm:py-12 px-4 min-h-screen text-gray-100 selection:bg-brand-red selection:text-white">
+    
+    <div id="bg-image"></div>
+    <div class="bg-overlay"></div>
+
+    <button onclick="toggleDarkMode()" class="theme-toggle" aria-label="Dark Mode umschalten">
+        <i class="fa-solid fa-moon text-xl w-6 h-6 flex items-center justify-center dark:hidden"></i>
+        <i class="fa-solid fa-sun text-xl w-6 h-6 items-center justify-center hidden dark:flex"></i>
+    </button>
+
+    <div class="w-full max-w-md 2xl:max-w-3xl mx-auto space-y-6 2xl:space-y-10">
+
+        <!-- Adresse ganz am Anfang -->
+        <div class="text-center mb-4">
+            <p class="text-xs sm:text-sm font-bold tracking-[0.2em] text-brand-yellow uppercase flex items-center justify-center gap-2">
+                <i class="fa-solid fa-location-dot text-brand-red"></i> Altengraben 15, 56068 Koblenz
+            </p>
+        </div>
+
+        <!-- 1. HERO / LOGO -->
+        <header class="wood-card p-8 pt-12 text-center flex flex-col items-center">
+            <!-- Halal Siegel -->
+            <div class="halal-badge">
+                <span class="text-[7px] leading-none">100%</span>
+                <span class="text-[10px] tracking-tighter">HALAL</span>
+            </div>
+
+            <div class="relative w-full flex flex-col items-center">
+                <!-- Titelgruppe -->
+                <div class="relative inline-block mb-4">
+                    <!-- Flamme hinter dem 'y' von Happy -->
+                    <i class="fa-solid fa-fire text-brand-red text-6xl absolute -top-5 -right-3 animate-flame z-0 drop-shadow-[0_0_15px_rgba(227,27,35,0.6)]"></i>
+                    
+                    <h1 class="relative z-10 flex flex-col items-center">
+                        <span class="font-happy text-7xl sm:text-8xl 2xl:text-9xl text-brand-yellow text-shadow-logo transform -rotate-2 z-10">
+                            Happy
+                        </span>
+                        <span class="font-headings text-6xl sm:text-7xl 2xl:text-8xl text-brand-red tracking-widest font-bold text-shadow-logo z-20 -mt-2 sm:-mt-3">
+                            DÖNER
+                        </span>
+                    </h1>
+                </div>
+                
+                <!-- Standort Info -->
+                <div class="mb-6">
+                    <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-black/70 border border-brand-red/40 backdrop-blur-sm shadow-inner">
+                        <span class="w-1.5 h-1.5 bg-brand-yellow rounded-full mr-2 animate-pulse"></span>
+                        <span class="text-[10px] 2xl:text-xs font-bold tracking-widest uppercase text-brand-yellow">Koblenz Altengraben</span>
+                    </div>
+                </div>
+
+                <p class="text-gray-300 text-xs sm:text-sm 2xl:text-lg font-medium uppercase tracking-[0.25em] opacity-80 leading-relaxed">
+                    Bester Geschmack in deiner Stadt
+                </p>
+            </div>
+        </header>
+
+        <!-- 2. KONTAKT & ZEITEN -->
+        <section class="wood-card p-6">
+            <h2 class="text-center font-headings text-2xl text-white mb-6 flex items-center justify-center gap-3">
+                <i class="fa-solid fa-clock-rotate-left text-brand-yellow"></i> Öffnungszeiten
+            </h2>
+            
+            <div class="space-y-3 text-sm 2xl:text-xl mb-6">
+                <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                    <span class="text-gray-400">Montag - Samstag</span>
+                    <span class="font-bold text-brand-yellow">10:00 - 23:00</span>
+                </div>
+                <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                    <span class="text-gray-400">Sonntag & Feiertage</span>
+                    <span class="font-bold text-brand-yellow">11:00 - 22:00</span>
+                </div>
+            </div>
+
+            <a href="tel:0123456789" class="w-full py-4 bg-brand-red hover:bg-red-700 text-white rounded-lg font-bold font-headings text-xl shadow-xl transition-all flex items-center justify-center gap-3 border border-red-900 group">
+                <i class="fa-solid fa-phone-volume group-hover:animate-bounce"></i>
+                <span>Jetzt anrufen</span>
+            </a>
+        </section>
+
+        <!-- 3. SPEISEKARTE (VOLLSTÄNDIG) -->
+        <section id="menu" class="wood-card p-6">
+            <h2 class="text-center font-headings text-2xl text-white mb-6 flex items-center justify-center gap-3">
+                <i class="fa-solid fa-utensils text-brand-red"></i> Speisekarte
+            </h2>
+            
+            <div class="space-y-4">
+                
+                <!-- Kategorie: Döner -->
+                <div class="border border-white/10 rounded-xl overflow-hidden bg-black/50">
+                    <button class="accordion-btn w-full px-5 py-4 flex justify-between items-center text-left hover:bg-white/5 transition-colors">
+                        <span class="font-bold text-brand-yellow font-headings text-lg tracking-wide uppercase">Döner Spezialitäten</span>
+                        <i class="fa-solid fa-chevron-down icon-chevron transition-transform duration-300 text-brand-red"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-5 space-y-4 border-t border-white/5">
+                            <div class="flex justify-between items-center group">
+                                <span class="text-white font-medium group-hover:text-brand-yellow transition-colors">Döner Kebab (Kalb/Pute)</span>
+                                <span class="font-headings text-brand-red">7,50€</span>
+                            </div>
+                            <div class="flex justify-between items-center group">
+                                <span class="text-white font-medium group-hover:text-brand-yellow transition-colors">Döner mit Käse</span>
+                                <span class="font-headings text-brand-red">8,50€</span>
+                            </div>
+                            <div class="flex justify-between items-center group">
+                                <span class="text-white font-medium group-hover:text-brand-yellow transition-colors">Big Happy Döner</span>
+                                <span class="font-headings text-brand-red">9,50€</span>
+                            </div>
+                            <div class="flex justify-between items-center group">
+                                <span class="text-white font-medium group-hover:text-brand-yellow transition-colors">Dürüm Kebab</span>
+                                <span class="font-headings text-brand-red">8,00€</span>
+                            </div>
+                            <div class="flex justify-between items-center group">
+                                <span class="text-white font-medium group-hover:text-brand-yellow transition-colors">Pomm-Döner (Dönerbox)</span>
+                                <span class="font-headings text-brand-red">7,00€</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kategorie: Lahmacun & Pide -->
+                <div class="border border-white/10 rounded-xl overflow-hidden bg-black/50">
+                    <button class="accordion-btn w-full px-5 py-4 flex justify-between items-center text-left hover:bg-white/5 transition-colors">
+                        <span class="font-bold text-brand-yellow font-headings text-lg tracking-wide uppercase">Lahmacun & Pide</span>
+                        <i class="fa-solid fa-chevron-down icon-chevron transition-transform duration-300 text-brand-red"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-5 space-y-4 border-t border-white/5">
+                            <div class="flex justify-between items-center">
+                                <span class="text-white font-medium">Lahmacun (pur)</span>
+                                <span class="font-headings text-brand-red">6,00€</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-white font-medium">Lahmacun mit Dönerfleisch</span>
+                                <span class="font-headings text-brand-red">9,00€</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-white font-medium">Pide mit Käse</span>
+                                <span class="font-headings text-brand-red">8,50€</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-white font-medium">Pide mit Hackfleisch</span>
+                                <span class="font-headings text-brand-red">9,50€</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kategorie: Tellergerichte -->
+                <div class="border border-white/10 rounded-xl overflow-hidden bg-black/50">
+                    <button class="accordion-btn w-full px-5 py-4 flex justify-between items-center text-left hover:bg-white/5 transition-colors">
+                        <span class="font-bold text-brand-yellow font-headings text-lg tracking-wide uppercase">Tellergerichte</span>
+                        <i class="fa-solid fa-chevron-down icon-chevron transition-transform duration-300 text-brand-red"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-5 space-y-4 border-t border-white/5">
+                            <div class="flex justify-between items-center">
+                                <span class="text-white font-medium">Döner Teller (Pommes/Reis)</span>
+                                <span class="font-headings text-brand-red">13,50€</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-white font-medium">Iskender Teller</span>
+                                <span class="font-headings text-brand-red">14,50€</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-white font-medium">Falafel Teller</span>
+                                <span class="font-headings text-brand-red">12,00€</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kategorie: Pizza -->
+                <div class="border border-white/10 rounded-xl overflow-hidden bg-black/50">
+                    <button class="accordion-btn w-full px-5 py-4 flex justify-between items-center text-left hover:bg-white/5 transition-colors">
+                        <span class="font-bold text-brand-yellow font-headings text-lg tracking-wide uppercase">Pizza (30cm)</span>
+                        <i class="fa-solid fa-chevron-down icon-chevron transition-transform duration-300 text-brand-red"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-5 space-y-4 border-t border-white/5">
+                            <div class="flex justify-between items-center">
+                                <span class="text-white font-medium">Pizza Margherita</span>
+                                <span class="font-headings text-brand-red">8,00€</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-white font-medium">Pizza Salami</span>
+                                <span class="font-headings text-brand-red">9,00€</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-white font-medium">Pizza Döner</span>
+                                <span class="font-headings text-brand-red">10,00€</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-white font-medium">Pizza Vegetaria</span>
+                                <span class="font-headings text-brand-red">9,50€</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kategorie: Vegetarisch -->
+                <div class="border border-white/10 rounded-xl overflow-hidden bg-black/50">
+                    <button class="accordion-btn w-full px-5 py-4 flex justify-between items-center text-left hover:bg-white/5 transition-colors">
+                        <span class="font-bold text-brand-yellow font-headings text-lg tracking-wide uppercase">Vegetarisch</span>
+                        <i class="fa-solid fa-chevron-down icon-chevron transition-transform duration-300 text-brand-red"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-5 space-y-4 border-t border-white/5">
+                            <div class="flex justify-between items-center">
+                                <span class="text-white font-medium">Falafel Sandwich</span>
+                                <span class="font-headings text-brand-red">7,00€</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-white font-medium">Halloumi Sandwich</span>
+                                <span class="font-headings text-brand-red">7,50€</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-white font-medium">Vegetarischer Döner</span>
+                                <span class="font-headings text-brand-red">6,50€</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 4. FOOTER -->
+        <footer class="wood-card p-8 text-center">
+            <p class="text-lg font-bold text-brand-yellow mb-2 font-headings">Happy Döner Koblenz</p>
+            <p class="text-gray-400 text-sm mb-6 uppercase tracking-widest leading-relaxed">
+                Altengraben 15<br>
+                56068 Koblenz
+            </p>
+
+            <a href="https://maps.google.com/?q=Happy+Döner+Altengraben+15+56068+Koblenz" target="_blank" class="inline-flex items-center gap-2 px-6 py-2 bg-brand-red rounded-full font-headings text-white shadow-xl hover:scale-105 transition-transform border border-brand-yellow mb-8">
+                <i class="fa-solid fa-location-arrow"></i>
+                Route planen
+            </a>
+
+            <div class="flex justify-center gap-8 text-2xl text-gray-500 mb-8">
+                <a href="#" class="hover:text-brand-red transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="hover:text-brand-red transition-colors"><i class="fa-brands fa-tiktok"></i></a>
+            </div>
+
+            <p class="text-[9px] uppercase tracking-widest text-gray-600">
+                © 2025 Happy Döner Koblenz | 100% Halal
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        // Dark Mode Check
+        if (localStorage.theme === 'light') {
+            document.documentElement.classList.remove('dark');
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                html.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        }
+
+        // Simple Accordion
+        document.querySelectorAll('.accordion-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const isActive = this.classList.contains('active');
+                
+                document.querySelectorAll('.accordion-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.nextElementSibling.style.maxHeight = null;
+                });
+
+                if (!isActive) {
+                    this.classList.add('active');
+                    const content = this.nextElementSibling;
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
